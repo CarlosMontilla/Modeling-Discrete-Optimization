@@ -6,3 +6,15 @@ var 0..9: C;
 var 0..9: R;
 var 0..9: O;
 var 0..9: K;
+
+include "alldifferent.mzn";
+
+constraint alldifferent([M, I, N, Z, C, R, O, K]);
+
+constraint 1000*M + 100*I + 10*N + 1*I
+         + 1000*Z + 100*I + 10*N + 1*C
+         = 10000*R + 1000*O + 100*C + 10*K + 1*Z;
+
+constraint Z <= 5;
+
+solve satisfy
