@@ -10,7 +10,7 @@ set of int: CTR = 1..5; % Numbers of actions
 array[CTR] of int: tmp_control = [1, 4, -2, -5, 0]; % Changes in temperature
 array[CTR] of int: cst_control = [10, 50, 30, 90, 0]; %Cost of each action
 array[HOURS] of var CTR: actions;
-array[HOURS0] of var 16..22: tmp;
+array[HOURS0] of var low..high: tmp;
 constraint tmp[0] = start;
 
 constraint forall(h in HOURS)(tmp[h] = (tmp[h-1] + readings[h]) div 2 +
