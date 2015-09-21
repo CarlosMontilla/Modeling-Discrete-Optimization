@@ -1,5 +1,6 @@
 % Third assignment
 % Programmed by Carlos Montilla
+include "fgcDynamics.mzn";
 int: f;
 int: g;
 int: c;
@@ -68,62 +69,11 @@ constraint forall(t in Trips where t mod 2 = 0)(rightSideUnchanged[t, 2] = right
 constraint forall(t in Trips where t mod 2 = 0)(rightSideUnchanged[t, 3] = rightSide[t-1, 3] - corn[t]);
 
 % Dynamics aller
-constraint forall(t in Trips where t mod 2 != 0)(
-if sum([bool2int(leftSideUnchanged[t,i] > 0) | i in 1..3]) < 2 \/ transported[t] = 0 then
-          leftSide[t,1] = leftSideUnchanged[t,1] /\
-          leftSide[t,2] = leftSideUnchanged[t,2] /\
-          leftSide[t,3] = leftSideUnchanged[t,3]
-  elseif leftSideUnchanged[t,2] = 0 then
-          leftSide[t,1] = leftSideUnchanged[t,1] - 1 /\
-          leftSide[t,2] = leftSideUnchanged[t,2] /\
-          leftSide[t,3] = leftSideUnchanged[t,3] - 1
-  elseif leftSideUnchanged[t,1] = 0 /\ leftSideUnchanged[t,2] > leftSideUnchanged[t,3] then
-         leftSide[t,1] = leftSideUnchanged[t,1] /\
-         leftSide[t,2] = leftSideUnchanged[t,2] - 1 /\
-         leftSide[t,3] = leftSideUnchanged[t,3] - 1
-  elseif leftSideUnchanged[t,1] = 0 /\ leftSideUnchanged[t,2] <= leftSideUnchanged[t,3] then
-         leftSide[t,1] = leftSideUnchanged[t,1] /\
-         leftSide[t,3] = leftSideUnchanged[t,3] - leftSideUnchanged[t,2] /\
-         leftSide[t,2] = leftSideUnchanged[t,2]
-  elseif leftSideUnchanged[t, 1] > leftSideUnchanged[t,2] then
-         leftSide[t,1] = leftSideUnchanged[t,1] - 1 /\
-         leftSide[t,2] = leftSideUnchanged[t,2] /\
-         leftSide[t,3] = leftSideUnchanged[t,3]
-  else leftSide[t,1] = leftSideUnchanged[t,1] /\
-       leftSide[t,2] = leftSideUnchanged[t,2] - leftSideUnchanged[t,1] /\
-       leftSide[t,3] = leftSideUnchanged[t,3]
-
-endif);
-
+constraint forall(t in Trips where t mod 2 != 0)(fgcDynamics(leftSideUnchanged, leftSide, t, transported));
 constraint forall(t in Trips, i in 1..3 where t mod 2 != 0)(rightSide[t,i] = rightSideUnchanged[t,i]);
 
 % Dynamics retour
-constraint forall(t in Trips where (t mod 2 = 0))(
-  if sum([bool2int(rightSideUnchanged[t,i] > 0) | i in 1..3]) < 2 \/ transported[t] = 0 \/ sum([leftSide[t,i] | i in 1..3]) = 0 then
-          rightSide[t,1] = rightSideUnchanged[t,1] /\
-          rightSide[t,2] = rightSideUnchanged[t,2] /\
-          rightSide[t,3] = rightSideUnchanged[t,3]
-  elseif rightSideUnchanged[t,2] = 0 then
-          rightSide[t,1] = rightSideUnchanged[t,1] - 1 /\
-          rightSide[t,2] = rightSideUnchanged[t,2] /\
-          rightSide[t,3] = rightSideUnchanged[t,3] - 1
-  elseif rightSideUnchanged[t,1] = 0 /\ rightSideUnchanged[t,2] > rightSideUnchanged[t,3] then
-         rightSide[t,1] = rightSideUnchanged[t,1] /\
-         rightSide[t,2] = rightSideUnchanged[t,2] - 1 /\
-         rightSide[t,3] = rightSideUnchanged[t,3] - 1
-  elseif rightSideUnchanged[t,1] = 0 /\ rightSideUnchanged[t,2] <= rightSideUnchanged[t,3] then
-         rightSide[t,1] = rightSideUnchanged[t,1] /\
-         rightSide[t,3] = rightSideUnchanged[t,3] - rightSideUnchanged[t,2] /\
-         rightSide[t,2] = rightSideUnchanged[t,2]
-  elseif rightSideUnchanged[t, 1] > rightSideUnchanged[t,2] then
-         rightSide[t,1] = rightSideUnchanged[t,1] - 1 /\
-         rightSide[t,2] = rightSideUnchanged[t,2] /\
-         rightSide[t,3] = rightSideUnchanged[t,3]
-  else rightSide[t,1] = rightSideUnchanged[t,1] /\
-       rightSide[t,2] = rightSideUnchanged[t,2] - rightSideUnchanged[t,1] /\
-       rightSide[t,3] = rightSideUnchanged[t,3]
-
-endif);
+constraint forall(t in Trips where (t mod 2 = 0))(fgcDynamics(rightSideUnchanged, rightSide, t, transported));
 constraint forall(t in Trips, i in 1..3 where t mod 2 = 0)(leftSide[t,i] = leftSideUnchanged[t,i]);
 
 %No unnecessary trip
